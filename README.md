@@ -34,6 +34,12 @@ flask run --host=0.0.0.0
 
 然后根据提示即可访问该系统。
 
+在linux系统中，可以使用我书写的shell脚本去管理该项目。可通过`sh project.sh`可查看使用说明。
+
+## 总结
+
+相面前端内容主要还是使用原作者开发的内容，后端服务使用flask进行了重构。项目没有精雕细琢，难免有所缺陷，欢迎讨论。
+
 ## 联系我
 
 1. 我的github：[https://github.com/Htring](https://github.com/Htring)
