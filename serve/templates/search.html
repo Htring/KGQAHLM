@@ -1,0 +1,232 @@
+{% extends 'layout_base.html' %}
+
+{% block title %} 查找 {% endblock %}
+
+{% block frame %}
+<h4 class="text-main pad-btm bord-btm">人物关系可视化</h4>
+
+<div class="row">
+
+
+    <div class="col-lg-6">
+
+
+    </div>
+    <div class="col-lg-2"></div>
+    <div class="col-lg-4">
+        <div class="input-group">
+            <input type="text" id="search" class="form-control input-lg" placeholder="请输入你要检索的名字...">
+            <span class="input-group-addon btn btn-mint" onclick="search()">搜索</span>
+
+        </div>
+    </div>
+
+</div>
+<div class="row" style="height: 40px;"></div>
+<div class="row">
+    <div class="col-lg-8" style="height: 400px;" id="guanxi">
+    </div>
+    <div class="col-lg-2"></div>
+    <div class="col-lg-4" id="tagsList">
+        <a href="#" data="林黛玉">林黛玉</a>
+        <a href="#" data="薛宝钗">薛宝钗</a>
+        <a href="#" data="贾宝玉">贾宝玉</a>
+        <a href="#" data="王熙凤">王熙凤</a>
+        <a href="#" data="贾政">贾政</a>
+        <a href="#" data="贾母">贾母</a>
+        <a href="#" data="贾赦">贾赦</a>
+        <a href="#" data="贾琏">贾琏</a>
+        <a href="#" data="贾珍">贾珍</a>
+        <a href="#" data="王夫人">王夫人</a>
+        <a href="#" data="贾探春">贾探春</a>
+        <a href="#" data="贾迎春">贾迎春</a>
+        <a href="#" data="贾惜春">贾惜春</a>
+        <a href="#" data="贾环">贾环</a>
+        <a href="#" data="巧姐">巧姐</a>
+        <a href="#" data="袭人">袭人</a>
+        <a href="#" data="贾敬">贾敬</a>
+        <a href="#" data="贾蓉">贾蓉</a>
+        <a href="#" data="贾兰">贾兰</a>
+        <a href="#" data="史湘云">史湘云</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block style %}
+<style type="text/css">
+    #tagsList {
+        position: relative;
+        width: 250px;
+        height: 250px;
+    }
+    #tagsList a {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-family: Microsoft YaHei, serif;
+        color: gray;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 3px 6px;
+    }
+
+    #tagsList a:hover {
+        color: #249e92;
+        letter-spacing: 2px;
+    }
+
+    #search:focus {
+        border: 1px solid #249e92;
+    }
+</style>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        // 回车键事件
+        if (e.which === 13) {
+            search();
+        }
+    });
+    const myChart = echarts.init(document.getElementById("guanxi"));
+    window.onresize = function () {
+        myChart.resize();
+    }
+
+    $.ajaxSetup({async: false});
+    myChart.showLoading();
+    myChart.hideLoading();
+    option = {
+        // backgroundColor: "white",
+        title: {
+            // text: '红楼梦人物关系图',
+            textStyle: {
+                // color: "white",
+                fontWeight: "lighter",
+            }
+        },
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        legend: {
+            x: "center",
+            show: true,
+            data: ["贾家荣国府", "贾家宁国府", "王家", "史家", "薛家", "其他", "林家"]
+        },
+        series: [
+            {
+                type: 'graph',
+                layout: 'force',
+                symbolSize: 50,
+                edgeSymbol: ['circle', 'arrow'],
+                edgeSymbolSize: [4, 4],
+                edgeLabel: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                        formatter: "{c}"
+                    }
+                },
+                force: {
+                    repulsion: 2500,
+                    edgeLength: [10, 100]
+                },
+                focusNodeAdjacency: true,
+                draggable: true,
+                roam: true,
+                categories: [{
+                    name: '贾家荣国府',
+                    // itemStyle: {
+                    //     normal: {
+                    //         color: "#009800",
+                    //     }
+                    // }
+                }, {
+                    name: '贾家宁国府',
+                    // itemStyle: {
+                    //     normal: {
+                    //         color: "#4592FF",
+                    //     }
+                    // }
+                }, {
+                    name: '王家',
+                    // itemStyle: {
+                    //     normal: {
+                    //         color: "#3592F",
+                    //     }
+                    // }
+                },
+                    {
+                        name: '史家',
+                    }, {
+                        name: '薛家',
+                    }, {
+                        name: '其他',
+                    },
+                    {
+                        name: '林家',
+                    }
+                ],
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                    }
+                },
+                force: {
+                    repulsion: 1000
+                },
+                tooltip: {
+                    formatter: function (node) { // 区分连线和节点，节点上额外显示其他数字
+                        if (!node.value) {
+                            return node.data.name;
+                        } else {
+                            return node.data.name + ":" + node.data.showNum;
+                        }
+                    },
+                },
+                lineStyle: {
+                    normal: {
+                        opacity: 0.9,
+                        width: 1,
+                        curveness: 0.3
+                    }
+                },
+                // progressiveThreshold: 700,
+                nodes: [],
+                links: [],
+            }
+        ]
+    };
+
+    function search() {
+        let url = '/search_name/' + $("#search").val();
+        $.getJSON(url, {
+        }, function (json) {
+            option.series[0].nodes = json.data.map(function (node, idx) {
+                node.id = idx;
+                return node;
+            });
+            option.series[0].links = json.links;
+            myChart.setOption(option, true);
+        });
+    }
+
+    $(".col-lg-4 a").click(function () {
+        let url = '/search_name/' + $(this).attr("data");
+        $.getJSON(url, {
+        }, function (json) {
+            option.series[0].nodes = json.data.map(function (node, idx) {
+                node.id = idx;
+                return node;
+            });
+            option.series[0].links = json.links;
+            myChart.setOption(option, true);
+        })
+    });
+</script>
+{% endblock %}

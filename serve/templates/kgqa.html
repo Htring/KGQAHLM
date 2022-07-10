@@ -1,0 +1,167 @@
+{% extends 'layout_base.html' %}
+
+{% block title %} 问答系统 {% endblock %}
+
+{% block frame %}
+<h4 class="text-main pad-btm bord-btm">问答系统</h4>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="input-group">
+            <input type="text" id="search" class="form-control input-lg"
+                   placeholder="请输入你的问题(eg.贾宝玉的爸爸是谁？)">
+            <span class="input-group-addon btn btn-primary" onclick="search()">搜索</span>
+        </div>
+    </div>
+</div>
+<div class="row" style="height: 40px;"></div>
+<div class="row">
+    <div class="col-lg-6" style="height: 400px;" id="guanxi"></div>
+    <div class="col-lg-1"></div>
+    <div class="col-lg-4">
+        <div class="row" style="width:200px;height:200px;">
+            <img id="picture" style="display:none;width:200px;height:200px;" src="">
+        </div>
+        <div class="row">
+            <div class="basic-info ">
+                <dl class="basicInfo-block basicInfo-left" id="profile"></dl>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which === 13) {  // 回车键事件
+            search();
+        }
+    });
+    window.onresize = function () {
+        myChart.resize();
+    }
+    $.ajaxSetup({async: false});
+    var myChart = echarts.init(document.getElementById("guanxi"));
+    myChart.showLoading();
+    myChart.hideLoading();
+    option = {
+        title: {
+            textStyle: {
+                // color: "white",
+                fontWeight: "lighter",
+            }
+        },
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        legend: {
+            x: "center",
+            show: true,
+            data: ["贾家荣国府", "贾家宁国府", "王家", "史家", "薛家", "其他", "林家"]
+        },
+        series: [
+            {
+                type: 'graph',
+                layout: 'force',
+                symbolSize: 50,
+                edgeSymbol: ['circle', 'arrow'],
+                edgeSymbolSize: [4, 4],
+                edgeLabel: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                        formatter: "{c}"
+                    }
+                },
+                force: {
+                    repulsion: 2500,
+                    edgeLength: [10, 100]
+                },
+                focusNodeAdjacency: true,
+                draggable: true,
+                roam: true,
+                categories: [{
+                    name: '贾家荣国府',
+                }, {
+                    name: '贾家宁国府',
+                }, {
+                    name: '王家',
+                },
+                    {
+                        name: '史家',
+                    }, {
+                        name: '薛家',
+                    }, {
+                        name: '其他',
+                    },
+                    {
+                        name: '林家',
+                    }
+                ],
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                    }
+                },
+                force: {
+                    repulsion: 1000
+                },
+                tooltip: {
+                    formatter: function (node) { // 区分连线和节点，节点上额外显示其他数字
+                        if (!node.value) {
+                            return node.data.name;
+                        } else {
+                            return node.data.name + ":" + node.data.showNum;
+                        }
+                    },
+                },
+                lineStyle: {
+                    normal: {
+                        opacity: 0.9,
+                        width: 1,
+                        curveness: 0.3
+                    }
+                },
+                // progressiveThreshold: 700,
+                nodes: [],
+                links: [],
+            }
+        ]
+    };
+    myChart.on('click', function (params) {
+        let url = '/get_profile/' + params.name;
+        $.getJSON(url, {
+        }, function (json) {
+            $("#profile").html(json[0]);
+            $("#picture").css("display", "block");
+            let image_url = json[1];
+            $("#picture").attr("src", "/static/"+ image_url);
+
+        });
+    });
+    function search() {
+        let url = '/KGQA_answer/' + $("#search").val();
+        $.getJSON(url, {
+        }, function (json) {
+            if(JSON.stringify(json[0]) === '{}'){
+                alert("系统智障中，还需进化，请重新提问");
+                location.reload();
+            }else{
+                option.series[0].nodes = json[0].data.map(function (node, idx) {
+                    node.id = idx;
+                    return node;
+                });
+                option.series[0].links = json[0].links;
+                myChart.setOption(option, true);
+                let image_url = json[2];
+                $("#profile").html(json[1]);
+                $("#picture").css("display", "block");
+                $("#picture").attr("src", "/static/" + image_url);
+            }
+        });
+    }
+</script>
+{% endblock %}

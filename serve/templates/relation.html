@@ -1,0 +1,113 @@
+{% extends 'layout_base.html' %}
+
+{% block title %} 关系 {% endblock %}
+
+{% block frame %}
+<div class="row" style="height: 800px;" id="guanxi"></div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    window.onresize = function () {
+        myChart.resize();
+    }
+    $.ajaxSetup({async: false});
+    var myChart = echarts.init(document.getElementById("guanxi"));
+    myChart.showLoading();
+    var rela = {"data": [], "links": []};
+    $.getJSON("{{url_for('static', filename='data.json')}}", function (json) {
+        rela = json;
+    });
+    myChart.hideLoading();
+    option = {
+        title: {
+            text: '红楼梦人物关系图',
+            textStyle: {
+                // color: "white",
+                fontWeight: "lighter",
+            }
+        },
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        legend: {
+            x: "center",
+            show: true,
+            data: ["贾家荣国府", "贾家宁国府", "王家", "史家", "薛家", "其他", "林家"]
+        },
+        series: [{
+                type: 'graph',
+                layout: 'force',
+                symbolSize: 45,
+                edgeSymbol: ['circle', 'arrow'],
+                edgeSymbolSize: [4, 4],
+                edgeLabel: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 10
+                        },
+                        formatter: "{c}"
+                    }
+                },
+                force: {
+                    repulsion: 2500,
+                    edgeLength: [10, 100]
+                },
+                focusNodeAdjacency: true,
+                draggable: true,
+                roam: true,
+                categories: [{
+                    name: '贾家荣国府',
+                }, {
+                    name: '贾家宁国府',
+                }, {
+                    name: '王家',
+                }, {
+                    name: '史家',
+                }, {
+                    name: '薛家',
+                }, {
+                    name: '其他',
+                }, {
+                    name: '林家',
+                }
+                ],
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 12
+                        },
+                    }
+                },
+                force: {
+                    repulsion: 1000
+                },
+                tooltip: {
+                    formatter: function (node) { // 区分连线和节点，节点上额外显示其他数字
+                        if (!node.value) {
+                            return node.data.name;
+                        } else {
+                            return node.data.name + ":" + node.data.showNum;
+                        }
+                    },
+                },
+                lineStyle: {
+                    normal: {
+                        opacity: 0.9,
+                        width: 1,
+                        curveness: 0.3
+                    }
+                },
+                nodes: rela.data.map(function (node, idx) {
+                    node.id = idx;
+                    return node;
+                }),
+                links: rela.links,
+            }
+        ]
+    };
+    myChart.setOption(option, true);
+</script>
+{% endblock %}
+

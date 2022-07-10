@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}
+基于知识图谱的《红楼梦》人物关系可视化及问答系统
+{% endblock %}
+
+{% block content %}
+<div id="container" class="effect aside-float aside-bright mainnav-lg">
+    <header id="navbar">
+        <div id="navbar-container" class="boxed">
+
+            <!--Brand logo & name-->
+            <!--================================-->
+            <div class="navbar-header">
+                <a href="{{ url_for('index') }}" class="navbar-brand">
+                    <img src="{{url_for('static', filename='images/logo.jpg')}}" alt="Nifty Logo" class="brand-icon">
+                    <div class="brand-title">
+                        <span class="brand-text">科皮子菊</span>
+                    </div>
+                </a>
+            </div>
+            <!--================================-->
+            <!--End brand logo & name-->
+
+            <!--Navbar Dropdown-->
+            <!--================================-->
+            <div class="navbar-content clearfix">
+                <ul class="nav navbar-top-links pull-left">
+                    <!--Navigation toogle button-->
+                    <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+                    <li class="tgl-menu-btn">
+                        <a class="mainnav-toggle" href="#">
+                            <i class="demo-pli-view-list"></i>
+                        </a>
+                    </li>
+
+                </ul>
+                <ul class="nav navbar-top-links pull-left">
+                    <h4>基于知识图谱的《红楼梦》人物关系可视化及问答系统</h4>
+                </ul>
+            </div>
+            <!--================================-->
+            <!--End Navbar Dropdown-->
+        </div>
+    </header>
+    <div class="boxed">
+        <div id="content-container">
+            <div id="page-content">
+                {% block frame %}{% endblock %}
+            </div>
+        </div>
+        <nav id="mainnav-container">
+            <div id="mainnav">
+                <div id="mainnav-menu-wrap">
+                    <div class="nano">
+                        <div class="nano-content">
+                            <ul id="mainnav-menu" class="list-group">
+                                <li class="list-header"> 人物关系可视化</li>
+                                <li>
+                                    <a href="{{ url_for('search') }}">
+                                        <i class="fa fa-search" style="width:24px"></i>
+                                        <span class="menu-title"><strong>检索人物关系</strong></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('get_all_relation') }}">
+                                        <i class="fa fa-pie-chart" style="width:24px"></i>
+                                        <span class="menu-title"><strong>红楼梦人物关系全貌</strong></span>
+                                    </a>
+                                </li>
+                                <li class="list-divider"></li>
+                                <li class="list-header">问答系统</li>
+                                <li>
+                                    <a href="{{ url_for('KGQA') }}">
+                                        <i class="fa fa-question-circle" style="width:24px"></i>
+                                        <span class="menu-title">人物关系问答</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <footer id="footer">
+        <p class="pad-lft">Copyright&#0169; 2022 科皮子菊 &nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;All Rights Reserved </p>
+    </footer>
+    <button class="scroll-top btn">
+        <i class="pci-chevron chevron-up"></i>
+    </button>
+</div>
+{% endblock %}
